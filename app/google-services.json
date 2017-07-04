@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "844249660332",
+    "firebase_url": "https://events-f4088.firebaseio.com",
+    "project_id": "events-f4088",
+    "storage_bucket": "events-f4088.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:844249660332:android:e59bfb141aaf4f06",
+        "android_client_info": {
+          "package_name": "com.erven.events"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "844249660332-6o777ic1ncehc41pnh895o6usdrl5vs8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6CgCic8HHvATYjABMkmGliIfRYAo32cg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
