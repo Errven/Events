@@ -37,6 +37,7 @@ public class SingleEventActivity extends AppCompatActivity implements View.OnCli
     private Button buttonJoin;
     private String user;
     private ListView listViewUsers;
+    private boolean eventGuest = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +64,12 @@ public class SingleEventActivity extends AppCompatActivity implements View.OnCli
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 event = dataSnapshot.getValue(Event.class);
-                populateView();
-                checkIfOwner();
-                populateList();
+                if (event != null) {
+                    populateView();
+                    checkIfOwner();
+                    populateList();
+                    checkIfInEvent();
+                }
             }
 
             @Override
@@ -86,11 +90,20 @@ public class SingleEventActivity extends AppCompatActivity implements View.OnCli
                     })
                     .setNegativeButton("NIE", null).show();
         } else if (v == buttonJoin) {
-            new AlertDialog.Builder(this).setTitle(event.getName()).setMessage("Czy chcesz dołączyć do tego wydarzenia?")
+            if (!eventGuest)
+                new AlertDialog.Builder(this).setTitle(event.getName()).setMessage("Czy chcesz dołączyć do tego wydarzenia?")
+                        .setPositiveButton("TAK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                joinEvent();
+                            }
+                        })
+                        .setNegativeButton("NIE", null).show();
+            else new AlertDialog.Builder(this).setTitle(event.getName()).setMessage("Czy chcesz opuścić to wydarzenie?")
                     .setPositiveButton("TAK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            joinEvent();
+                            leaveEvent();
                         }
                     })
                     .setNegativeButton("NIE", null).show();
@@ -114,6 +127,7 @@ public class SingleEventActivity extends AppCompatActivity implements View.OnCli
     private void checkIfOwner() {
         if (event.getOwner().equals(user)) {
             buttonDelete.setVisibility(View.VISIBLE);
+            buttonJoin.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -126,7 +140,25 @@ public class SingleEventActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-    private void deleteEvent() {
+    private void leaveEvent() {
+        if (event.users.contains(user)) {
+            event.users.remove(user);
+            databaseReference.child("events/" + event.getId() + "/users").setValue(event.users);
+        }
+    }
 
+    private void deleteEvent() {
+        finish();
+        databaseReference.child("events/" + event.getId()).removeValue();
+    }
+
+    private void checkIfInEvent() {
+        if (event.users.contains(user) && !event.getOwner().equals(user)) {
+            eventGuest = true;
+            buttonJoin.setText("Opuść wydarzenie");
+        } else {
+            buttonJoin.setText("Dołącz");
+            eventGuest = false;
+        }
     }
 }
