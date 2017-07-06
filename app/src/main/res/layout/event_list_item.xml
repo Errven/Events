@@ -48,7 +48,7 @@
         android:layout_alignEnd="@+id/textView_date" />
 
     <TextView
-        android:id="@+id/textView_count"
+        android:id="@+id/textView_users"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/textView_place"

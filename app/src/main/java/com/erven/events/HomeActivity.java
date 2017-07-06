@@ -5,17 +5,16 @@ import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -61,12 +60,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 EventAdapter adapter = new EventAdapter(getApplicationContext(), R.layout.event_list_item, events);
                 ListView eventsListView = (ListView) findViewById(R.id.eventsListView);
                 eventsListView.setAdapter(adapter);
-
+                eventsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(getApplicationContext(), SingleEventActivity.class);
+                        intent.putExtra("event_id", events.get(position).getId());
+                        startActivity(intent);
+                    }
+                });
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
 
@@ -95,12 +100,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             TextView textViewDate = (TextView) convertView.findViewById(R.id.textView_date);
             TextView textViewOwner = (TextView) convertView.findViewById(R.id.textView_owner);
             TextView textViewTime = (TextView) convertView.findViewById(R.id.textView_time);
+            TextView textViewUsers = (TextView) convertView.findViewById(R.id.textView_users);
 
             textViewName.setText(events.get(position).getName());
             textViewPlace.setText(events.get(position).getPlace());
             textViewDate.setText(events.get(position).getDate());
             textViewOwner.setText(events.get(position).getOwner());
             textViewTime.setText(events.get(position).getTime());
+            textViewUsers.setText("Liczba uczestników: " + Integer.toString(events.get(position).getUsers().size()));
+
             return convertView;
         }
     }
@@ -137,9 +145,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             userText.setText(String.format("Witaj %s", firebaseAuth.getCurrentUser().getEmail()));
     }
 
-    public void getEvents() {
-        //eventsList = databaseReference.child("events").getDatabase();
+    private void showToast(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
-
 
 }

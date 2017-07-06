@@ -24,7 +24,10 @@
         <activity android:name=".HomeActivity" />
         <activity
             android:name=".AddEventActivity"
-            android:parentActivityName=".HomeActivity"></activity>
+            android:parentActivityName=".HomeActivity" />
+        <activity
+            android:name=".SingleEventActivity"
+            android:parentActivityName=".HomeActivity" />
     </application>
 
 </manifest>

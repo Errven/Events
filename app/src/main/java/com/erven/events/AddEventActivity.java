@@ -113,6 +113,7 @@ public class AddEventActivity extends AppCompatActivity implements View.OnClickL
         String owner = firebaseAuth.getCurrentUser().getEmail();
         String id = getID();
         ArrayList<String> users = new ArrayList<>();
+        users.add(owner);
 
         Event event = new Event(id, name, place, date, time, owner, users);
 
