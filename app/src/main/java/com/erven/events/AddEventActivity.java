@@ -3,6 +3,7 @@ package com.erven.events;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import android.app.TimePickerDialog;
@@ -13,10 +14,14 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Date;
+import java.util.Random;
 
 public class AddEventActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -26,6 +31,8 @@ public class AddEventActivity extends AppCompatActivity implements View.OnClickL
     private EditText placeText;
     private EditText dateText;
     private EditText timeText;
+    private DatabaseReference databaseReference;
+    private FirebaseAuth firebaseAuth;
 
     int yearSet, monthSet, daySet;
     int hourSet, minuteSet;
@@ -51,6 +58,9 @@ public class AddEventActivity extends AppCompatActivity implements View.OnClickL
         daySet = cal.get(Calendar.DAY_OF_MONTH);
         hourSet = cal.get(Calendar.HOUR);
         minuteSet = cal.get(Calendar.MINUTE);
+
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        firebaseAuth = FirebaseAuth.getInstance();
     }
 
     @Override
@@ -90,12 +100,40 @@ public class AddEventActivity extends AppCompatActivity implements View.OnClickL
             hourSet = hourOfDay;
             minuteSet = minute;
             timeText.setText(String.format("%d:%d", hourSet, minuteSet));
-            if(minuteSet<0)
+            if (minuteSet < 0)
                 timeText.setText(String.format("%d:0%d", hourSet, minuteSet));
         }
     };
 
     private void addEvent() {
-        showDialog(0);
+        String name = nameText.getText().toString();
+        String place = placeText.getText().toString();
+        String date = dateText.getText().toString();
+        String time = timeText.getText().toString();
+        String owner = firebaseAuth.getCurrentUser().getEmail();
+        String id = getID();
+        ArrayList<String> users = new ArrayList<>();
+
+        Event event = new Event(id, name, place, date, time, owner, users);
+
+        databaseReference.child("events").child(event.id).setValue(event);
+        showToast("Added to database");
+        finish();
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    protected String getID() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder string = new StringBuilder();
+        Random rnd = new Random();
+        while (string.length() < 10) {
+            int index = (int) (rnd.nextFloat() * chars.length());
+            string.append(chars.charAt(index));
+        }
+        return string.toString();
+
     }
 }
